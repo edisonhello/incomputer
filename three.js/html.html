@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>shm</title>
+</head>
+<body>
+	<script src="3D.js"></script>
+	<script>
+	var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+		camera.position.z+=200;
+
+	var renderer = new THREE.WebGLRenderer();
+		renderer.setSize( window.innerWidth, window.innerHeight );
+		document.body.appendChild( renderer.domElement );
+
+	var geometryfb = new THREE.SphereGeometry(7,32,32);
+	var geometryfsb = new THREE.SphereGeometry(0.5,32,32);
+
+	var geometryfl = new THREE.Geometry();
+		geometryfl.vertices.push(new THREE.Vector3(-57,0,0));
+		geometryfl.vertices.push(new THREE.Vector3(57,0,0));
+
+	var materialfb = new THREE.MeshLambertMaterial({color:0x88dddd});
+	var materialfl = new THREE.LineBasicMaterial({color:0x88dddd});
+
+	var ball = new THREE.Mesh(geometryfb, materialfb);
+	var line = new THREE.Line(geometryfl, materialfl);
+
+	var scene = new THREE.Scene();
+
+	scene.add(ball);
+	scene.add(line);
+
+	var directionalLight = new THREE.DirectionalLight( 0xcccccc );
+		directionalLight.position.set(1,2,2).normalize();
+		scene.add(directionalLight);
+
+	var render = function(){
+		requestAnimationFrame(render);
+		renderer.render(scene,camera);
+	}
+	render();
+
+	var t=0;
+	var pi=3.14159265358979323846264338327950288;
+
+	//var movet = new THREE.Vector3;
+
+	var dots=[];
+
+	function anim(){
+		t+=1;
+	//	movet = (Math.sin(t*pi/180),0,0)
+	var movet = new THREE.Vector3(Math.cos(t*pi/180),0,0);
+		ball.position.add(movet);
+		renderer.render(scene,camera);
+
+		var newdot = new THREE.Mesh(geometryfsb, materialfb);
+			scene.add(newdot);
+			newdot.position.add(new THREE.Vector3(ball.position.x,0,0));
+			newdot.position.x = ball.position.x;
+
+		dots.push(newdot);
+
+		for(var i=0,l=dots.length;i<l;i++){
+			dots[i].position.add(new THREE.Vector3(0,-0.2,0));
+			if(dots[i].position.y<-50){
+				scene.remove(dots[i]);
+			}
+		}
+
+		requestAnimationFrame(anim);
+	}
+	anim();
+
+	</script>
+</body>
+</html>
